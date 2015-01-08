@@ -1,0 +1,5 @@
+.Python
+strongs.sublime-project
+strongs.sublime-workspace
+node_modules
+rethinkdb_data
