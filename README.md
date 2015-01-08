@@ -1,4 +1,6 @@
 Run project:
 - If you want, create a virtualenv
+- `npm i -g coffee-script`
 - `npm install`
-- `npm start`
+- `coffee index.coffee`
+- navigate to http://localhost:3000/bible/get/ELB/Mk2
