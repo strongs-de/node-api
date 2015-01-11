@@ -12,6 +12,7 @@
     "express": "^4.10.7",
     "coffee-script": "^1.8.0",
     "rethinkdb": "^1.15.0-0",
-    "body-parser": "^1.10.1"
+    "body-parser": "^1.10.1",
+    "sax": "^0.6.1"
   }
 }

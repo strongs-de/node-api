@@ -1,5 +1,5 @@
 r           = require 'rethinkdb'
-config      = require __dirname + '/config'
+config      = require './config'
 
 module.exports =
     ###
