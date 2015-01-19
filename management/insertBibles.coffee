@@ -1,9 +1,9 @@
-r       = require 'rethinkdb'
-config  = require '../config'
-sax     = require 'sax'
-fs      = require 'fs'
+r           = require 'rethinkdb'
+config      = require '../config'
+sax         = require 'sax'
+fs          = require 'fs'
 
-class BibleSaxParser
+class RethinkDbWriter
     writeInDb: () =>
         if @bibleObj?
             r.connect config.rethinkdb, (error, conn) =>
@@ -11,17 +11,32 @@ class BibleSaxParser
                     console.error error
                     return
 
+                @conn = conn
+
                 console.log 'writing %s in db ...',
                     @bibleObj.title
 
-                for v in @bibleObj.verses
-                    r.table('bible').insert(v).run conn, (err, result) =>
-                        if err?
-                            console.error err
-                            return
+                @writeTranslation () =>
+                    for v in @bibleObj.verses
+                        r.table('bible_' + @bibleObj.identifier).insert(v).run conn, (err, result) =>
+                            if err?
+                                console.error err
+                                return
 
 
-class ZefanjaSaxParser extends BibleSaxParser
+    writeTranslation: (next) =>
+        if @bibleObj?
+            name = 'bible_' + @bibleObj.identifier
+            r.tableCreate(name).run @conn, (err, result) =>
+                if (err) and (not err.message.match(/Table `.*` already exists/))
+                    console.log "Could not create the table `" + name + "`"
+                    console.log err
+                    process.exit 1
+                console.log "Table `" + name + "` created."
+                next()
+
+
+class ZefanjaSaxParser extends RethinkDbWriter
     constructor: (path) ->
         @baseTagsToStore = ['identifier', 'language', 'title']
         @bibleObj = {verses: []}
