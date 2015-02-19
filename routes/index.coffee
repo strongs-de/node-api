@@ -1,3 +1,3 @@
 module.exports = (app) ->
-    require('./todo')(app)
     require('./bible')(app)
+    require('./translations')(app)

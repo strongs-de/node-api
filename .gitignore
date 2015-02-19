@@ -3,3 +3,8 @@ strongs.sublime-project
 strongs.sublime-workspace
 node_modules
 rethinkdb_data
+*.sqlite
+osis.NGU.xml
+osis.psalmenNGU.xml
+osis.schlachter2000.v1.withoutnotes.xml
+migrations

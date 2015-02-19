@@ -13,6 +13,10 @@
     "coffee-script": "^1.8.0",
     "rethinkdb": "^1.15.0-0",
     "body-parser": "^1.10.1",
-    "sax": "^0.6.1"
+    "sax": "^0.6.1",
+    "sequelize": "^2.0.2",
+    "sqlite3": "^3.0.5",
+    "sequelize-cli": "^1.2.0",
+    "js2coffee": "^2.0.1"
   }
 }

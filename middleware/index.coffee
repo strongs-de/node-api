@@ -1,5 +1,6 @@
 config      = require '../config'
 r           = require 'rethinkdb'
+Sequelize   = require 'sequelize'
 
 module.exports =
     createConnection: (req, res, next) ->
@@ -16,3 +17,15 @@ module.exports =
     closeConnection: (req, res, next) ->
         req._rdbConn.close()
         next()
+
+    createSequelize: (req, res, next) ->
+        sequelize = new Sequelize 'strongs', null, null,
+            storage: 'strongs.sqlite'
+            dialect: 'sqlite'
+        sequelize.complete (err) ->
+            if !!err
+                console.log 'Unable to connect to database:', err
+            else
+                console.log 'Connection has been established'
+                req.sequelize = sequelize
+                next()

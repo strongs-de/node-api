@@ -1,5 +1,10 @@
 m = require '../middleware/bible'
 
 module.exports = (app) ->
-    # Define the todo routes
-    app.route('/bible/get/:translations/:bookNumber/:chapterNumber').get m.get;         # Retrieve one chapter
+    # Chapter request route
+    app.route('/bible/get/:translations/:bookNumber/:chapterNumber').get m.get
+
+    # Search requests
+    app.route('/bible/search/:translations/:searchString').get m.search
+    app.route('/bible/search/:translations/:bookNumber/:searchString').get m.search
+    app.route('/bible/search/:translations/:bookNumber/:chapterNumber/:searchString').get m.search
