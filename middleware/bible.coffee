@@ -8,17 +8,36 @@ module.exports =
         # do the select
         models.BibleText.findAll(
             include: [
-                model: models.BibleVers
-                where:
-                    bookNr_id: parseInt(req.params.bookNumber)
-                    chapterNr: parseInt(req.params.chapterNumber)
-                order: 'versNr'
+                {
+                    model: models.BibleVers
+                    where:
+                        bookNr_id: parseInt(req.params.bookNumber)
+                        chapterNr: parseInt(req.params.chapterNumber)
+                    order: 'versNr'
+                    include: models.BibleBook
+                }
+                {
+                    model: models.BibleTranslation
+                }
             ]
             where:
                 translationIdentifier_id: translations
             order: 'translationIdentifier_id'
             ).then (t) ->
-                res.send JSON.stringify t
+                # modify json data
+                res.json t.map (item) ->
+                    newItem =
+                        translation:
+                            identifier: item.BibleTranslation.identifier
+                            name: item.BibleTranslation.name
+                        book:
+                            nr: item.BibleVer.BibleBook.nr
+                            name: item.BibleVer.BibleBook.name
+                            shortName: item.BibleVer.BibleBook.short_name
+                        chapter: item.BibleVer.chapterNr
+                        vers: item.BibleVer.versNr
+                        text: item.versText
+                    return newItem
             .catch (e) ->
                 res.status(500).send(JSON.stringify e).end()
 
@@ -47,6 +66,6 @@ module.exports =
                     $like: '%' + req.params.searchString + '%'
             order: 'translationIdentifier_id'
             ).then (t) ->
-                res.send JSON.stringify t
+                res.json t
             .catch (e) ->
                 res.status(500).send(JSON.stringify e).end()

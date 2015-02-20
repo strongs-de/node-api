@@ -10,11 +10,11 @@
 
 # API version 1.0
 1. [Overview](#overview)
-1. REST API
+2. REST API
   1. [List all available translations](#list-translations)
-  1. [Get bible text](#get-bible-text)
-  1. [Search within bibles](#search-within-bibles)
-  1. [Get greek informations](#get-greek-informations)
+  2. [Get bible text](#get-bible-text)
+  3. [Search within bibles](#search-within-bibles)
+  4. [Get greek informations](#get-greek-informations)
     1. [Strong number statistics](#strong-number-statistics)
 
 ## Overview
@@ -22,7 +22,7 @@ This REST Api responds always with a JSON return type.
 
 ## List translations
 
-    GET /bible/translations
+    GET /translations
 
 This returns a list of all translations that are currently stored in the database. Here is an example response:
 
