@@ -41,7 +41,7 @@ This returns a list of all translations that are currently stored in the databas
 
 This function returns the requested bible text for all translations you specified. The translations needs to be specified by the translation identifier. You can choose multiple translations by concatenating them with a comma. Here's an example request:
 
-    GET /bible/get/ELB1905STR,LUTH1912/30/1
+    GET /bible/ELB1905STR,LUTH1912/30/1
 
 The result is a JSON array with the bible text. If multiple translations are requested, the verses are sorted in alphabetical order of the translation identifier and the vers number. The result looks like:
 
@@ -80,9 +80,9 @@ The result is a JSON array with the bible text. If multiple translations are req
 
 ## Search within bibles
 
-    GET /bible/search/:translations/:searchString
-    GET /bible/search/:translations/:bookNr/:searchString
-    GET /bible/search/:translations/:bookNr/:chapterNr/:searchString
+    GET /search/:translations/:searchString
+    GET /search/:translations/:bookNr/:searchString
+    GET /search/:translations/:bookNr/:chapterNr/:searchString
 
 This function searches in all given translations (comma separated translation identifier) for the given `searchString`. You can optionally specify a book number and chapter number if you wish.
 
