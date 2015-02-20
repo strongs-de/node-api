@@ -16,6 +16,7 @@
   3. [Search within bibles](#search-within-bibles)
   4. [Get greek informations](#get-greek-informations)
     1. [Strong number statistics](#strong-number-statistics)
+    2. [Grammar details](#grammar-details)
 
 ## Overview
 This REST Api responds always with a JSON return type.
@@ -124,9 +125,31 @@ This returns the following information JSON object:
 }
 ```
 
+### Grammar details
 
+    GET /strong/:translation/:bookNr/:chapterNr/:versNr/:strongNr
 
+You can request detailed informations about a specific word in a bible vers. There is only one limitation. If the strong number exists multiple times in this vers, there is returned a JSON object for each one of the occurences. You don't know for sure which one matches to which word in this vers.
 
+The result looks like this:
+
+```javascript
+[
+  {
+    translationIdentifier: 'LUTH1912',
+    book: 45
+    chapter: 1,
+    vers: 1,
+    strongNr: 2034,
+    greek: '[the greek word]',
+    pronounciation: '[how to pronounce it]',
+    grammar: '[grammar identifier]'
+  },
+  // ...
+]
+```
+
+The grammar identifier is correlating with Robertsons Morphological Analysis Codes.
 
 
 
