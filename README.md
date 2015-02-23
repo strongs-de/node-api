@@ -1,4 +1,6 @@
 # Getting started
+- `git clone` this repository into a directory of your choice
+- Navigate to `node-api` directory
 - If you want, create a virtualenv
 - `npm i -g coffee-script`
 - `npm install`
@@ -47,36 +49,30 @@ This function returns the requested bible text for all translations you specifie
 The result is a JSON array with the bible text. If multiple translations are requested, the verses are sorted in alphabetical order of the translation identifier and the vers number. The result looks like:
 
 ```javascript
-[
-  {
-    "translation": {
-      "identifier":"LUTH1912",
-      "name":"Luther 1912"
+{
+  "translations": [
+    {
+      "translation": {
+        "identifier": "LUTH1912",
+        "name": "Luther 1912"
+      },
+      "book": {
+        "nr": 1,
+        "name": "1.Mose",
+        "shortName": "1Mos"
+      }
+      "chapter": 30,
+      "verses": [
+        {
+          "versNumber":1,
+          "text":"Text of vers 1",
+        },
+        //...
+      ]
     },
-    "versNumber":1,
-    "text":"Text of vers 1",
-    "chapter":30,
-    "book": {
-      "nr":1,
-      "name":"1.Mose",
-      "shortName":"1Mos"
-    }
-  },
-  {
-    "translation": {
-      "identifier":"LUTH1912",
-      "name":"Luther 1912"
-    },
-    "versNumber":2,
-    "text":"Ttext of vers 2",
-    "chapter":30,
-    "book": {
-      "nr":1,
-      "name":"1.Mose",
-      "shortName":"1Mos"
-    }
-  }
-]
+    // next translation object ...
+  ]
+}
 ```
 
 ## Search within bibles
@@ -150,19 +146,3 @@ The result looks like this:
 ```
 
 The grammar identifier is correlating with Robertsons Morphological Analysis Codes.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
