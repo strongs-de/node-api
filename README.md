@@ -10,18 +10,17 @@
   - Rename it to `strongs_dev.sqlite`
 - `coffee index.coffee`
 
-# API version 1.0
-1. [Overview](#overview)
-2. REST API
-  1. [List all available translations](#list-translations)
-  2. [Get bible text](#get-bible-text)
-  3. [Search within bibles](#search-within-bibles)
-  4. [Get greek informations](#get-greek-informations)
-    1. [Strong number statistics](#strong-number-statistics)
-    2. [Grammar details](#grammar-details)
+# General information
+In order to continue feature development and don't lose backward compatibility
+all api calls should be used with a version number.
 
-## Overview
-This REST Api responds always with a JSON return type.
+# API version 1
+1. [List all available translations](#list-translations)
+2. [Get bible text](#get-bible-text)
+3. [Search within bibles](#search-within-bibles)
+4. [Get greek informations](#get-greek-informations)
+ 1. [Strong number statistics](#strong-number-statistics)
+ 2. [Grammar details](#grammar-details)
 
 ## List translations
 
