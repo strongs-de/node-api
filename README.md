@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/strongs-de/node-api.svg?branch=master)](https://travis-ci.org/strongs-de/node-api) [![Dependency Status](https://david-dm.org/strongs-de/node-api.svg)](https://david-dm.org/strongs-de/node-api.svg)
+[![Build Status](https://travis-ci.org/strongs-de/node-api.svg?branch=master)](https://travis-ci.org/strongs-de/node-api) [![Dependency Status](https://david-dm.org/strongs-de/node-api.svg)](https://david-dm.org/strongs-de/node-api)
 
 # Getting started
 - `git clone` this repository into a directory of your choice
