@@ -25,7 +25,7 @@ module.exports =
             order: 'translationIdentifier_id'
             ).then (t) ->
                 # modify json data
-                res.json t.map (item) ->
+                res.status(200).json t.map (item) ->
                     newItem =
                         translation:
                             identifier: item.BibleTranslation.identifier
@@ -39,7 +39,7 @@ module.exports =
                         text: item.versText
                     return newItem
             .catch (e) ->
-                res.status(500).send(JSON.stringify e).end()
+                res.status(500).json e
 
 
     search: (req, res, next) ->
@@ -66,6 +66,6 @@ module.exports =
                     $like: '%' + req.params.searchString + '%'
             order: 'translationIdentifier_id'
             ).then (t) ->
-                res.json t
+                res.status(200).json t
             .catch (e) ->
-                res.status(500).send(JSON.stringify e).end()
+                res.status(500).json e

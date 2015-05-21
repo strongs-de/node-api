@@ -1,9 +1,12 @@
+#!/usr/bin/env coffee
+
 #################################################
 express     = require 'express'
 bodyParser  = require 'body-parser'
 config      = require './config'
 models      = require './models'
-https       = require 'https'
+# https       = require 'https'
+http        = require 'http'
 fs          = require 'fs'
 app         = express()
 #################################################
@@ -20,5 +23,6 @@ app.use bodyParser();                           # Parse data sent to the server
 require('./routes')(app)                        # Define the routes
 #################################################
 models.sequelize.sync().then () ->
-    https.createServer(options, app).listen config.express.port                 # hook up the server
+    # https.createServer(options, app).listen config.express.port                 # hook up the server
+    http.createServer(app).listen config.express.port                 # hook up the server
     console.log "Port: " + config.express.port                                  # print Port info
