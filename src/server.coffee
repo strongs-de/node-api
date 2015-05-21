@@ -13,9 +13,9 @@ app         = express()
 
 class Server
     constructor: ->
-        sslkey = fs.readFileSync 'ssl-key.pem'
-        sslcert = fs.readFileSync 'ssl-cert.pem'
-        options = key: sslkey, cert: sslcert
+        # sslkey = fs.readFileSync 'ssl-key.pem'
+        # sslcert = fs.readFileSync 'ssl-cert.pem'
+        # options = key: sslkey, cert: sslcert
 
         app.use (req, res, next) ->                     # Allow cross origin requests (CORS)
             res.header 'Access-Control-Allow-Origin', '*'
