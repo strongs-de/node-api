@@ -1,27 +1,28 @@
 {
-    "name": "strongs-express",
-    "version": "0.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "test": "mocha",
-        "start": "coffee src/index.coffee"
-    },
-    "author": "Mirko Hecky",
-    "license": "ISC",
-    "dependencies": {
-        "express": "^4.10.7",
-        "coffee-script": "^1.8.0",
-        "body-parser": "^1.10.1",
-        "sax": "^0.6.1",
-        "sequelize": "^2.0.2",
-        "sqlite3": "^3.0.5",
-        "sequelize-cli": "^1.2.0",
-        "js2coffee": "^2.0.1"
-    },
-    "devDependencies": {
-        "chai": "*",
-        "mocha": "*",
-        "supertest": "*"
-    }
+  "name": "strongs-express",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "coffee src/index.coffee"
+  },
+  "author": "Mirko Hecky",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.10.7",
+    "coffee-script": "^1.8.0",
+    "body-parser": "^1.10.1",
+    "sax": "^0.6.1",
+    "sequelize": "^2.0.2",
+    "sqlite3": "^3.0.5",
+    "sequelize-cli": "^1.2.0",
+    "js2coffee": "^2.0.1",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "supertest": "*"
+  }
 }

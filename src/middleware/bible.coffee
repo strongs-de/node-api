@@ -1,4 +1,5 @@
 models      = require '../models'
+_           = require 'underscore'
 
 module.exports =
     get: (req, res, next) ->
@@ -25,7 +26,8 @@ module.exports =
             order: 'translationIdentifier_id'
             ).then (t) ->
                 # modify json data
-                res.status(200).json t.map (item) ->
+                newT = {}
+                t = t.map (item) ->
                     newItem =
                         translation:
                             identifier: item.BibleTranslation.identifier
@@ -38,6 +40,17 @@ module.exports =
                         vers: item.BibleVer.versNr
                         text: item.versText
                     return newItem
+                t = _.groupBy t, (o) -> o.translation.identifier
+                newT = {translations: []}
+                for prop, val of t
+                    newT.translations.push
+                        translation: val[0].translation
+                        book: val[0].book
+                        chapter: val[0].chapter
+                        verses: val.map (o) ->
+                            versNumber: o.vers
+                            text: o.text
+                res.status(200).json newT
             .catch (e) ->
                 res.status(500).json e
 
