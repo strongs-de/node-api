@@ -84,7 +84,34 @@ The result is a JSON array with the bible text. If multiple translations are req
 
 This function searches in all given translations (comma separated translation identifier) for the given `searchString`. You can optionally specify a book number and chapter number if you wish.
 
-The response is the same as in the [get bible text request](#get-bible-text).
+The response is nearly the same as in the [get bible text request](#get-bible-text):
+```javascript
+{
+  "translations": [
+    {
+      "translation": {
+        "identifier": "LUTH1912",
+        "name": "Luther 1912"
+      },
+      "verses": [
+        {
+          "book": {
+            "nr": 1,
+            "name": "1.Mose",
+            "shortName": "1Mos"
+          }
+          "chapter": 30,
+          "versNumber":1,
+          "text":"Text of vers 1",
+        },
+        //...
+      ]
+    },
+    // next translation object ...
+  ]
+}
+```
+
 
 ## Get greek informations
 There are multiple methods to get informations about the greek text.

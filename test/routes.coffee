@@ -24,37 +24,38 @@ describe 'Route for', () ->
                 done()
 
     describe 'Strong Statistics', () ->
-        strongStatisticsTests = (err, res) ->
-            if err?
-                return done(err)
-            res.body.should.have.property 'overallUsageCount'
-            res.body.should.have.property 'bookUsageCount'
-            res.body.bookUsageCount.should.be.instanceof Array
-            res.body.bookUsageCount.should.have.length.above 0
-            c1 = res.body.bookUsageCount[0]
-            c1.should.have.property 'bookNr'
-            c1.should.have.property 'usageCount'
-            res.body.should.have.property 'translationVariants'
-            res.body.translationVariants.shoudl.be.instanceof Array
-            res.body.translationVariants.should.have.length.above 0
-            tv1 = res.body.translationVariants[0]
-            tv1.should.have.property 'translationIdentifier'
-            tv1.shoud.have.property 'variants'
-            tv1.variants.should.be.instanceof Array
-            tv1.variants.should.have.length.above 0
-            tv1.variants[0].should.be.instanceof String
+        strongStatisticsTests = (done) ->
+            return (err, res) ->
+                if err?
+                    return done(err)
+                res.body.should.have.property 'overallUsageCount'
+                res.body.should.have.property 'bookUsageCount'
+                res.body.bookUsageCount.should.be.instanceof Array
+                res.body.bookUsageCount.should.have.length.above 0
+                c1 = res.body.bookUsageCount[0]
+                c1.should.have.property 'bookNr'
+                c1.should.have.property 'usageCount'
+                res.body.should.have.property 'translationVariants'
+                res.body.translationVariants.shoudl.be.instanceof Array
+                res.body.translationVariants.should.have.length.above 0
+                tv1 = res.body.translationVariants[0]
+                tv1.should.have.property 'translationIdentifier'
+                tv1.shoud.have.property 'variants'
+                tv1.variants.should.be.instanceof Array
+                tv1.variants.should.have.length.above 0
+                tv1.variants[0].should.be.instanceof String
 
         it 'returns the word statistics for a hebrew strong number', (done) ->
             api.get('/strong/H160')
             .expect(200)
             .expect('Content-Type', /json/)
-            .end strongStatisticsTests
+            .end strongStatisticsTests(done)
 
         it 'returns the word statistics for a greek strong number', (done) ->
             api.get('/strong/G26')
             .expect(200)
             .expect('Content-Type', /json/)
-            .end strongStatisticsTests
+            .end strongStatisticsTests(done)
 
         it 'returns the grammar details for one single greek word', (done) ->
             api.get('/strong/LUTH1912/46/14/1/26')
@@ -86,8 +87,11 @@ describe 'Route for', () ->
                 done()
 
     describe 'Bible Service', () ->
-        bibleServiceAndSearchTests = (done) ->
-            return (err, res) ->
+        it 'returns a bible chapter', (done) ->
+            api.get('/bible/LUTH1912/1/1/')
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .end (err, res) ->
                 if err?
                     return done(err)
                 res.body.should.have.property 'translations'
@@ -112,17 +116,34 @@ describe 'Route for', () ->
                 v1.should.have.property 'text'
                 done()
 
-        it 'returns a bible chapter', (done) ->
-            api.get('/bible/LUTH1912/1/1/')
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .end bibleServiceAndSearchTests(done)
-
         it 'searches for a text in a translation', (done) ->
             api.get('/search/LUTH1912/Liebe')
             .expect(200)
             .expect('Content-Type', /json/)
-            .end bibleServiceAndSearchTests(done)
+            .end (err, res) ->
+                if err?
+                    return done(err)
+                res.body.should.have.property 'translations'
+                translations = res.body.translations
+                translations.should.be.instanceof Array
+                translations.should.have.length.above 0
+                translation = translations[0]
+                translation.should.have.property 'translation'
+                translation.should.have.deep.property 'translation.identifier', 'LUTH1912'
+                translation.should.have.deep.property 'translation.name'
+                translation.should.have.property 'verses'
+                translation.verses.should.be.instanceof Array
+                translation.verses.should.have.length.above 0
+                v1 = translation.verses[0]
+                v1.should.have.property 'book'
+                book = v1.book
+                book.should.have.property 'name'
+                book.should.have.property 'nr'
+                book.should.have.property 'shortName'
+                v1.should.have.property 'chapter'
+                v1.should.have.property 'versNumber'
+                v1.should.have.property 'text'
+                done()
 
         it 'returns an error if a non existing bible book is requested', (done) ->
             api.get('/bible/LUTH1912/100/1/')

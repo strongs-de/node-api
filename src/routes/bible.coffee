@@ -6,5 +6,5 @@ module.exports = (app) ->
 
     # Search requests
     app.route('/search/:translations/:searchString').get m.search
-    app.route('/search/:translations/:bookNumber/:searchString').get m.search
-    app.route('/search/:translations/:bookNumber/:chapterNumber/:searchString').get m.search
+    app.route('/search/:translations/:bookNumber(\\d+)/:searchString').get m.search
+    app.route('/search/:translations/:bookNumber(\\d+)/:chapterNumber(\\d+)/:searchString').get m.search
