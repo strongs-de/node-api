@@ -1,42 +1,57 @@
-r           = require 'rethinkdb'
+# r           = require 'rethinkdb'
 config      = require '../config'
 sax         = require 'sax'
 fs          = require 'fs'
+models      = require '../models'
 
-class RethinkDbWriter
-    writeInDb: () =>
-        if @bibleObj?
-            r.connect config.rethinkdb, (error, conn) =>
-                if error
-                    console.error error
-                    return
+class SequelizeDbWriter
+    writeInDb: () ->
+        models.sequelize.transaction (t) =>
+            @transaction = t
+            models.sequelize.sync().then () =>
+                if @bibleObj?
+                    @findOrCreateBibleTranslation().then (trans) =>
+                        @writeBibleBooks(trans)
 
-                @conn = conn
+    findOrCreateBibleTranslation: () ->
+        return models.BibleTranslation.findOne(where: identifier: @bibleObj.identifier).then (t) =>
+            if not t?
+                t = models.BibleTranslation.create identifier: @bibleObj.identifier, language: @bibleObj.language, name: @bibleObj.title
+            return t
 
-                console.log 'writing %s in db ...',
-                    @bibleObj.title
+    writeBibleBooks: (trans) ->
+        cnt = fs.readFileSync './bibles/bibleBooks_de.txt'
+        for book, i in (''+cnt).split '\n'
+            @findOrCreateBibleBook(i + 1, 'de', book)
 
-                @writeTranslation () =>
-                    for v in @bibleObj.verses
-                        r.table('bible_' + @bibleObj.identifier).insert(v).run conn, (err, result) =>
-                            if err?
-                                console.error err
-                                return
+        for vers in @bibleObj.verses
+            @findOrCreateVers trans, vers
+
+    findOrCreateBibleBook: (nr, lang, sBook) ->
+        arr = sBook.split ','
+        return models.BibleBook.findOne(where: nr: nr).then (b) =>
+            if not b?
+                alternatives = ',' + arr[2..].join(',') + ',' if arr.length > 2
+                b = models.BibleBook.create nr: nr, name: arr[0], short_name: arr[1], alternativeNames: alternatives ? '', language: lang
+            return b
+
+    findOrCreateVers: (trans, vers) ->
+        return models.BibleVers.findOne(where: bookNr_id: vers.bookNumber, chapterNr: vers.chapterNumber, versNr: vers.versNumber).then (v, created) =>
+            if not v?
+                return models.BibleVers.create(bookNr_id: vers.bookNumber, chapterNr: vers.chapterNumber, versNr: vers.versNumber).then (versObj) =>
+                    return versObj
+            return v
+        .then (v) =>
+            @findOrCreateBibleText trans, v, vers.versText
+
+    findOrCreateBibleText: (tr, dbVers, text) ->
+        models.BibleText.findOne(where: vers_id: dbVers.id, translationIdentifier_id: tr.identifier).then (t) =>
+            if not t?
+                models.BibleText.create vers_id: dbVers.id, translationIdentifier_id: tr.identifier, versText: text
 
 
-    writeTranslation: (next) =>
-        if @bibleObj?
-            name = 'bible_' + @bibleObj.identifier
-            r.tableCreate(name).run @conn, (err, result) =>
-                if (err) and (not err.message.match(/Table `.*` already exists/))
-                    console.log "Could not create the table `" + name + "`"
-                    console.log err
-                    process.exit 1
-                console.log "Table `" + name + "` created."
-                next()
 
-
-class ZefanjaSaxParser extends RethinkDbWriter
+class ZefanjaSaxParser extends SequelizeDbWriter
     constructor: (path) ->
         @baseTagsToStore = ['identifier', 'language', 'title']
         @bibleObj = {verses: []}
@@ -67,17 +82,17 @@ class ZefanjaSaxParser extends RethinkDbWriter
             @saveVersText = true
 
 
-    # todo: we have to get all text within that node
+    # TODO: we have to get all text within that node
     # e.g. even if there are subnodes in a vers node
     onText: (text) =>
         if @saveTextIn?
             @bibleObj[@saveTextIn] = text
         if @saveVersText
             @bibleObj.verses.push
-                translation:
-                    identifier: @bibleObj.identifier
-                    title: @bibleObj.title
-                    language: @bibleObj.language
+                # translation:
+                #     identifier: @bibleObj.identifier
+                #     title: @bibleObj.title
+                #     language: @bibleObj.language
                 bookNumber: @currentBook
                 chapterNumber: @currentChapter
                 versNumber: @currentVers
@@ -93,9 +108,14 @@ class ZefanjaSaxParser extends RethinkDbWriter
 
 
 parseAndInsertBibles = () ->
+    # test
+    parser = new ZefanjaSaxParser './bibles/zefanja-xml/GER_LUTH1912.xml'
+    parser.writeInDb()
+    return
+
     list = fs.readdirSync './bibles/zefanja-xml'
     for path in list
-        if path[0] is '.'
+        if path[0] is '.' or path[-3] is not 'xml'
             continue
         parser = new ZefanjaSaxParser './bibles/zefanja-xml/' + path
         parser.writeInDb()
