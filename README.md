@@ -4,13 +4,12 @@
 - `git clone` this repository into a directory of your choice
 - Navigate to `node-api` directory
 - If you want, create a virtualenv
-- `npm i -g coffee-script`
 - `npm install`
 - Until now you have to download a already generated sqlite database:
   - Download the database from https://github.com/strongs-de/strongs/releases
   - Save it into the directory where the `index.coffee` file is located
   - Rename it to `strongs_dev.sqlite`
-- `coffee index.coffee`
+- `node src/index.js`
 
 # General information
 In order to continue feature development and don't lose backward compatibility
