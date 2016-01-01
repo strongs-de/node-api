@@ -15,11 +15,12 @@
     "eslint": "^1.10.3",
     "express": "^4.10.7",
     "js2coffee": "^2.0.1",
-    "sax": "^0.6.1",
+    "progress": "^1.1.8",
     "sequelize": "^2.0.2",
     "sequelize-cli": "^1.2.0",
     "sqlite3": "^3.0.5",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "xml2js": "^0.4.15"
   },
   "devDependencies": {
     "chai": "*",

@@ -1,7 +1,8 @@
 {
   "development": {
     "host": "strongs_dev.sqlite",
-    "dialect": "sqlite"
+    "dialect": "sqlite",
+    "logging": false
   },
   "test": {
     "username": "root",
