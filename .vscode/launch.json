@@ -1,4 +1,72 @@
 {
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Starten",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/src/index.js",
+            "stopOnEntry": false,
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": null,
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "externalConsole": false,
+            "sourceMaps": false,
+            "outDir": null
+        },
+        {
+            "name": "Bibeln einfügen",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/src/management/insertBibles.js",
+            "stopOnEntry": false,
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": null,
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "externalConsole": false,
+            "sourceMaps": false,
+            "outDir": null
+        },
+        {
+            "name": "Anfügen",
+            "type": "node",
+            "request": "attach",
+            "port": 5858,
+            "address": "localhost",
+            "restart": false,
+            "sourceMaps": false,
+            "outDir": null,
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": null
+        },
+        {
+            "name": "An den Prozess anhängen",
+            "type": "node",
+            "request": "attach",
+            "processId": "${command.PickProcess}",
+            "port": 5858,
+            "sourceMaps": false,
+            "outDir": null
+        }
+    ]
+}
+
+/*
+{
 	"version": "0.1.0",
 	// List of configurations. Add new configurations or edit existing ones.  
 	// ONLY "node" and "mono" are supported, change "type" to switch.
@@ -9,13 +77,13 @@
 			// Type of configuration. Possible values: "node", "mono".
 			"type": "node",
 			// Workspace relative or absolute path to the program.
-			"program": "src/index.js",
+			"program": "${workspace.root}/src/index.js",
 			// Automatically stop program after launch.
 			"stopOnEntry": true,
 			// Command line arguments passed to the program.
 			"args": [],
 			// Workspace relative or absolute path to the working directory of the program being debugged. Default is the current workspace.
-			"cwd": ".",
+			"cwd": "${workspace.root}",
 			// Workspace relative or absolute path to the runtime executable to be used. Default is the runtime executable on the PATH.
 			"runtimeExecutable": null,
 			// Environment variables passed to the program.
@@ -28,7 +96,7 @@
 			// "address": "localhost",
 			// Port to attach to.
 			// "port": 3000,
-            "program": "src/management/insertBibles.js"
+            "program": "${workspace.root}/src/management/insertBibles.js"
 		},
         {
 			"name": "Debug Mocha Test",
@@ -40,3 +108,4 @@
 		}
 	]
 }
+*/

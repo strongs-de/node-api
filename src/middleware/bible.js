@@ -30,7 +30,10 @@ class BibleMiddleware {
                 },
                 chapter: item.BibleVer.chapterNr,
                 vers: item.BibleVer.versNr,
-                text: item.versText
+                sequenceOrder: item.sequenceOrder,
+                sequenceText: item.sequenceText,
+                strongNumber: item.strongNumber,
+                grammar: item.grammar
             };
             return newItem;
         });
@@ -42,17 +45,30 @@ class BibleMiddleware {
         };
         for (var prop in t) {
             var val = t[prop];
-            newT.translations.push({
+            var newObject = {
                 translation: val[0].translation,
                 book: val[0].book,
                 chapter: val[0].chapter,
-                verses: val.map(function(o) {
-                    return {
-                        versNumber: o.vers,
-                        text: o.text
-                    };
-                })
+                verses: []
+            };
+            var groupedVal = _.groupBy(val, function(o) {
+                return o.vers;
             });
+            newObject.verses = _.map(groupedVal, function(o, versNumber) {
+                var sequences = _.map(o, function(oo) {
+                    return {
+                        sequenceOrder: oo.sequenceOrder,
+                        strongNumber: oo.strongNumber,
+                        sequenceText: oo.sequenceText,
+                        grammar: oo.grammar
+                    };
+                });
+                return {
+                    versNumber: versNumber,
+                    text: sequences
+                };
+            });
+            newT.translations.push(newObject);
         }
         return res.status(200).json(newT);
     }
@@ -62,6 +78,9 @@ class BibleMiddleware {
      * is the result object for the http request.
      */
     handleBibleSearch(t, res) {
+        //return this.handleBibleResults(t, res);
+
+
         // modify json data
         if (t.length <= 0) {
             return res.status(200).json({});
@@ -79,7 +98,10 @@ class BibleMiddleware {
                 },
                 chapter: item.BibleVer.chapterNr,
                 vers: item.BibleVer.versNr,
-                text: item.versText
+                sequenceOrder: item.sequenceOrder,
+                sequenceText: item.sequenceText,
+                strongNumber: item.strongNumber,
+                grammar: item.grammar
             };
             return newItem;
         });
@@ -91,19 +113,30 @@ class BibleMiddleware {
         };
         for (var prop in t) {
             var val = t[prop];
-            newT.translations.push({
+            var newObject = {
                 translation: val[0].translation,
-                // book: val[0].book
-                // chapter: val[0].chapter
-                verses: val.map(function(o) {
-                    return {
-                        book: o.book,
-                        chapter: o.chapter,
-                        versNumber: o.vers,
-                        text: o.text
-                    };
-                })
+                verses: []
+            };
+            var groupedVal = _.groupBy(val, function(o) {
+                return o.book.nr + '#' + o.chapter + '#' + o.vers;
             });
+            newObject.verses = _.map(groupedVal, function(o, versNumber) {
+                var sequences = _.map(o, function(oo) {
+                    return {
+                        sequenceOrder: oo.sequenceOrder,
+                        strongNumber: oo.strongNumber,
+                        sequenceText: oo.sequenceText,
+                        grammar: oo.grammar
+                    };
+                });
+                return {
+                    book: o[0].book,
+                    chapter: o[0].chapter,
+                    versNumber: o[0].vers,
+                    text: sequences
+                };
+            });
+            newT.translations.push(newObject);
         }
         return res.status(200).json(newT);
     }
@@ -112,7 +145,7 @@ class BibleMiddleware {
 var middleware = new BibleMiddleware();
 
 module.exports = {
-    get: function(req, res, next) {
+    get: function(req, res) {
         // split all translations
         var translations = req.params.translations.split(',');
 
@@ -123,7 +156,7 @@ module.exports = {
         }
 
         // build the select statement
-        var select = models.BibleText.findAll({
+        var select = models.BibleSequence.findAll({
             include: [{
                 model: models.BibleVers,
                 where: {
@@ -138,7 +171,7 @@ module.exports = {
             where: {
                 translationIdentifier_id: translations
             },
-            order: 'translationIdentifier_id'
+            order: ['translationIdentifier_id', 'BibleVer.BibleBook.nr', 'BibleVer.chapterNr', 'BibleVer.versNr', 'sequenceOrder']
         });
         
         // execute the select
@@ -149,7 +182,7 @@ module.exports = {
         });
     },
 
-    search: function(req, res, next) {
+    search: function(req, res) {
         // split all translations
         var translations = req.params.translations.split(',');
 
@@ -170,7 +203,101 @@ module.exports = {
         }
 
         // build the select statement
-        var select = models.BibleText.findAll({
+        var select = models.BibleSequence.findAll({
+            include: [{
+                model: models.BibleVers,
+                where: whereObj,
+                order: 'versNr',
+                include: models.BibleBook
+            }, {
+                model: models.BibleTranslation
+            }],
+            where: {
+                translationIdentifier_id: translations,
+                sequenceText: {
+                    $like: '%' + req.params.searchString + '%'
+                }
+            },
+            order: 'translationIdentifier_id'
+        }).then(function(result1) {
+            var versIds = _.map(result1, function(item) {
+                return item.BibleVer.id;
+            });
+            return models.BibleSequence.findAll({
+                include: [{
+                    model: models.BibleVers,
+                    where: whereObj,
+                    order: 'versNr',
+                    include: models.BibleBook
+                }, {
+                    model: models.BibleTranslation
+                }],
+                where: {
+                    translationIdentifier_id: translations,
+                    vers_id: {
+                        $in: versIds
+                    }
+                },
+                order: ['translationIdentifier_id', 'BibleVer.BibleBook.nr', 'BibleVer.chapterNr', 'BibleVer.versNr', 'sequenceOrder']
+            });
+        });
+
+        // 1) search for bible verses which contains the search keyword
+        var select = models.BibleSequence.findAll({
+            include: [{
+                model: models.BibleVers,
+                where: whereObj,
+                order: 'versNr'
+            }],
+            where: {
+                translationIdentifier_id: translations,
+                sequenceText: {
+                    $like: '%' + req.params.searchString + '%'
+                }
+            },
+            order: 'translationIdentifier_id'
+        }).then(function(result1) {
+            var versIds = _.map(result1, function(item) {
+                return item.BibleVer.id;
+            });
+            return models.BibleSequence.findAll({
+                include: [{
+                    model: models.BibleVers,
+                    where: whereObj,
+                    order: 'versNr',
+                    include: models.BibleBook
+                }, {
+                    model: models.BibleTranslation
+                }],
+                where: {
+                    translationIdentifier_id: translations,
+                    vers_id: {
+                        $in: versIds
+                    }
+                },
+                order: ['translationIdentifier_id', 'BibleVer.BibleBook.nr', 'BibleVer.chapterNr', 'BibleVer.versNr', 'sequenceOrder']
+            });
+        });
+
+        /*var select = models.BibleSequence.findAll({
+            include: [{
+                model: models.BibleVers,
+                where: whereObj,
+                order: 'versNr',
+                include: models.BibleBook
+            }, {
+                model: models.BibleTranslation
+            }],
+            where: {
+                translationIdentifier_id: translations,
+                sequenceText: {
+                    $like: '%' + req.params.searchString + '%'
+                }
+            },
+            order: 'translationIdentifier_id'
+        });*/
+
+        /*var select = models.BibleText.findAll({
             include: [{
                 model: models.BibleVers,
                 where: whereObj,
@@ -186,7 +313,7 @@ module.exports = {
                 }
             },
             order: 'translationIdentifier_id'
-        });
+        });*/
         
         return select.then(function(t) {
             return middleware.handleBibleSearch(t, res);
